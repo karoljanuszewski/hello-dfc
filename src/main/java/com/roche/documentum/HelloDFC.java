@@ -12,14 +12,14 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 public class HelloDFC {
-    private final static Logger logger = Logger.getLogger(HelloDFC.class);
+    private static final Logger logger = Logger.getLogger(HelloDFC.class);
     private static IDfSession session = null;
     private static IDfSessionManager sessionManager = null;
     private static Properties appProperties = null;
+    private static ExtensionMapper extensionMapper;
     private static ArrayList<String> rObjectIds;
 
     public static void main(String[] args) throws IOException {
@@ -37,8 +37,8 @@ public class HelloDFC {
                 }
             }
             case ("EXPORT_DOCUMENT"): {
-                getRObjectIds();
                 contentExport(getRObjectIds(),appProperties.getProperty("export.file.location"));
+                extensionMapper = new ExtensionMapper(session);
 
 
             }
@@ -48,12 +48,6 @@ public class HelloDFC {
         }
 
 
-   /*     if (appProperties.getProperty("application.mode").equals("TEST")){
-
-        }
-        else {
-            System.out.printf("error");
-        }*/
 
 
         disconnect();
@@ -72,7 +66,6 @@ public class HelloDFC {
             while (line != null) {
                 rObjectIds.add(line);
                 System.out.println(line);
-                logger.debug("adding a line");
                 line = bufferedReader.readLine();
             }
         } catch (IOException e) {
@@ -92,30 +85,24 @@ public class HelloDFC {
         String objectName;
         String contentType;
         OutputStream outputStream;
-
+        extensionMapper = new ExtensionMapper(session);
 
         for (String rObject : rObjectIds
         ) {
             try {
                 sysObject = (IDfSysObject) session.getObject(new DfId(rObject));
+                contentType = sysObject.getContentType();
                 objectName = sysObject.getObjectName();
                 inputStream = sysObject.getContent();
-                outputStream = new FileOutputStream(exportPath+objectName);
+                outputStream = new FileOutputStream(exportPath + objectName+"."+extensionMapper.getExtension(contentType));
 
-                byte[] buf =new byte [1024];
-                outputStream.write(buf,0,1024);
+                outputStream.write(new byte[1024], 0, 1024);
+                System.out.println("saving file"+objectName);
                 inputStream.close();
                 outputStream.close();
-            } catch (DfException e) {
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (DfException | IOException e) {
                 e.printStackTrace();
             }
-
-
-
         }
 
 
