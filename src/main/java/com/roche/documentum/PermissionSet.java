@@ -1,18 +1,12 @@
 package main.java.com.roche.documentum;
 
-import com.documentum.com.DfClientX;
-import com.documentum.com.IDfClientX;
-import com.documentum.fc.client.*;
+import com.documentum.fc.client.DfQuery;
+import com.documentum.fc.client.IDfCollection;
+import com.documentum.fc.client.IDfQuery;
+import com.documentum.fc.client.IDfSession;
 import com.documentum.fc.common.DfException;
-import com.documentum.fc.common.DfId;
-import com.documentum.fc.common.IDfAttr;
-import com.documentum.fc.common.IDfLoginInfo;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class PermissionSet {
 
@@ -25,9 +19,23 @@ public class PermissionSet {
     }
 
 
-    public void assignPermissionSetToFiles(String files, IDfSession session) throws DfException {
+    public void assignPermissionSetToFiles(ArrayList<String> files, IDfSession session) throws DfException {
 
-        String ownerDqlQuery = "SELECT owner_name FROM dm_acl WHERE object_name = '" + this.aclName+"'";
+        IDfQuery query = new DfQuery();
+        String dql;
+        String aclOwner = findOwnerNameForAcl(session);
+
+        for (String file : files
+        ) {
+            dql = "UPDATE dm_document OBJECTS SET acl_domain = '" + aclOwner + "' SET acl_name = '" + this.aclName + "'" + "WHERE r_object_id = '" + file + "';";
+            System.out.println("UPDATE " + dql);
+            query.setDQL(dql);
+            query.execute(session, IDfQuery.EXEC_QUERY);
+        }
+    }
+
+    private String findOwnerNameForAcl(IDfSession session) throws DfException {
+        String ownerDqlQuery = "SELECT owner_name FROM dm_acl WHERE object_name = '" + this.aclName + "'";
         IDfQuery query = new DfQuery();
         query.setDQL(ownerDqlQuery);
         String ownerName = "";
@@ -37,14 +45,10 @@ public class PermissionSet {
             ownerName = collection.getString("owner_name");
         }
         collection.close();
-
-
         System.out.println("ownerDqlQuery " + ownerDqlQuery);
         System.out.println("ownerName " + ownerName);
 
+        return ownerName;
     }
 
-    public String getAclName() {
-        return aclName;
-    }
 }

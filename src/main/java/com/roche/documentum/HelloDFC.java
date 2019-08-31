@@ -32,8 +32,7 @@ public class HelloDFC {
                 String aclName = appProperties.getProperty("permission.set.name");
                 System.out.println(aclName);
                 PermissionSet acl = new PermissionSet(aclName);
-                acl.assignPermissionSetToFiles(appProperties.getProperty("rObjectId.list.file.location"),session);
-                System.out.println(acl.getAclName());
+                acl.assignPermissionSetToFiles(getRObjectIds(),session);
 
                 break;
 

@@ -205,3 +205,102 @@ DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A glob
 	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
 	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:142)
 	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+00:29:57,073  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:142)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+00:33:54,578  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:142)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+00:39:29,689  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+00:41:11,356  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+00:50:55,943  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+00:52:39,527  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+00:57:22,626  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+01:02:38,628  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+01:04:47,282  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+01:05:49,362  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:143)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
+01:09:43,339  WARN [main] com.documentum.fc.client.security.internal.RegistrationMgr - [DFC_SECURITY_GR_PUBLICATION_FAILED] Publication of DFC instance with global registry failed
+DfException:: THREAD: main; MSG: [DFC_BOF_GLOBAL_REGISTRY_NOT_CONFIGURED] A global registry is not configured; ERRORCODE: ff; NEXT: null
+	at com.documentum.fc.client.security.impl.DfcIdentityPublisher.<init>(DfcIdentityPublisher.java:51)
+	at com.documentum.fc.client.security.internal.RegistrationMgr.register(RegistrationMgr.java:34)
+	at com.documentum.fc.impl.RuntimeContext.<clinit>(RuntimeContext.java:195)
+	at com.documentum.fc.client.DfClient.<clinit>(DfClient.java:772)
+	at com.documentum.com.DfClientX.getLocalClient(DfClientX.java:43)
+	at main.java.com.roche.documentum.HelloDFC.connect(HelloDFC.java:141)
+	at main.java.com.roche.documentum.HelloDFC.main(HelloDFC.java:26)
