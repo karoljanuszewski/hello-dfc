@@ -10,32 +10,122 @@ import com.documentum.fc.common.IDfLoginInfo;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class HelloDFC {
-    public static IDfSession session = null;
-    public static IDfSessionManager sessionManager = null;
+    private final static Logger logger = Logger.getLogger(HelloDFC.class);
+    private static IDfSession session = null;
+    private static IDfSessionManager sessionManager = null;
+    private static Properties appProperties = null;
+    private static ArrayList<String> rObjectIds;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         connect();
-        try {
-            typeDemo("dm_acl");
-            //typeDemo("dm_document");
-            //typeAttributesDemo("dm_acl");
-            //typeDumpDemo("dm_acl");
-            //selectDocumentsForStudyDemo("ML00780");
-            //documentModificationDemo("090f42df8025afbc");
-            //apiDemo();
-        } catch (DfException ex) {
-            Logger.getLogger(HelloDFC.class.getName()).log(Level.INFO, null, ex);
+        readAppProperties();
+
+
+        switch (appProperties.getProperty("application.mode")) {
+            case ("TEST"): {
+                try {
+                    typeDemo("dm_acl");
+
+                } catch (DfException ex) {
+                    Logger.getLogger(HelloDFC.class.getName()).log(Level.INFO, null, ex);
+                }
+            }
+            case ("EXPORT_DOCUMENT"): {
+                getRObjectIds();
+                contentExport(getRObjectIds(),appProperties.getProperty("export.file.location"));
+
+
+            }
+            default: {
+                System.out.println("ERROR");
+            }
         }
+
+
+   /*     if (appProperties.getProperty("application.mode").equals("TEST")){
+
+        }
+        else {
+            System.out.printf("error");
+        }*/
+
 
         disconnect();
     }
 
-    public static void typeDemo(String typeName) throws DfException {
+    private static ArrayList<String> getRObjectIds() throws FileNotFoundException {
+        rObjectIds = new ArrayList<>();
+        String fileName = appProperties.getProperty("rObjectId.list.file.location");
+        System.out.println(fileName);
+
+        InputStream inputStream = new FileInputStream(fileName);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+        try {
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                rObjectIds.add(line);
+                System.out.println(line);
+                logger.debug("adding a line");
+                line = bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return rObjectIds;
+    }
+
+    private static void contentExport(ArrayList<String> rObjectIds, String exportPath) {
+        IDfSysObject sysObject;
+        ByteArrayInputStream inputStream;
+        String objectName;
+        String contentType;
+        OutputStream outputStream;
+
+
+        for (String rObject : rObjectIds
+        ) {
+            try {
+                sysObject = (IDfSysObject) session.getObject(new DfId(rObject));
+                objectName = sysObject.getObjectName();
+                inputStream = sysObject.getContent();
+                outputStream = new FileOutputStream(exportPath+objectName);
+
+                byte[] buf =new byte [1024];
+                outputStream.write(buf,0,1024);
+                inputStream.close();
+                outputStream.close();
+            } catch (DfException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+
+
+
+    }
+
+
+
+    private static void typeDemo(String typeName) throws DfException {
         IDfType type = session.getType(typeName);
         System.out.println("Info about " + typeName + " type:");
         System.out.println("Name: " + type.getName());
@@ -44,24 +134,23 @@ public class HelloDFC {
     }
 
 
-
-    public static void connect() {
+    private static void connect() {
         IDfClientX clientx = new DfClientX();
         IDfClient client;
         sessionManager = null;
 
         try {
 
-            Properties properties = readProperties();
+            Properties connectionProperties = readProperties();
 
-            String username = properties.getProperty("login.username");
-            String password = properties.getProperty("login.password");
+            String username = connectionProperties.getProperty("login.username");
+            String password = connectionProperties.getProperty("login.password");
 
             IDfLoginInfo loginInfo = clientx.getLoginInfo();
             loginInfo.setUser(username);
             loginInfo.setPassword(password);
 
-            String repository = properties.getProperty("login.repository");
+            String repository = connectionProperties.getProperty("login.repository");
 
             client = clientx.getLocalClient();
 
@@ -76,25 +165,30 @@ public class HelloDFC {
     }
 
 
-
     private static Properties readProperties() throws IOException {
-        Properties properties = new Properties();
+        Properties loginProperties = new Properties();
 
         try (InputStream inputStream = HelloDFC.class.getClassLoader().getResourceAsStream("main/resources/config.properties")) {
-            properties.load(inputStream);
+            loginProperties.load(inputStream);
         }
 
-        return properties;
+        return loginProperties;
     }
+
+
+    private static Properties readAppProperties() throws IOException {
+        appProperties = new Properties();
+
+        try (InputStream inputStream = HelloDFC.class.getClassLoader().getResourceAsStream("main/resources/app.properties")) {
+            appProperties.load(inputStream);
+        }
+        return appProperties;
+    }
+
 
     public static void disconnect() {
         sessionManager.release(session);
     }
-
-
-
-
-
 
 
     private static String readProperty(String propertyKey) {
@@ -167,6 +261,14 @@ public class HelloDFC {
         }
 
     }
+
+
+    //typeDemo("dm_document");
+    //typeAttributesDemo("dm_acl");
+    //typeDumpDemo("dm_acl");
+    //selectDocumentsForStudyDemo("ML00780");
+    //documentModificationDemo("090f42df8025afbc");
+    //apiDemo();
 
 
 }
