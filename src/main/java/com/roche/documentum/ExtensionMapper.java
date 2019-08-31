@@ -23,7 +23,6 @@ public class ExtensionMapper {
             IDfCollection collection = query.execute(session,IDfQuery.DF_READ_QUERY);
             while (collection.next()){
                 map.put(collection.getString("a_content_type"),collection.getString("dos_extension"));
-                System.out.println(map.values());
             }
         } catch (DfException e) {
             e.printStackTrace();

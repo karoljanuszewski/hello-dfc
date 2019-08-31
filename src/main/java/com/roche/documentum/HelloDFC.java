@@ -22,23 +22,28 @@ public class HelloDFC {
     private static ExtensionMapper extensionMapper;
     private static ArrayList<String> rObjectIds;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, DfException {
         connect();
         readAppProperties();
 
 
         switch (appProperties.getProperty("application.mode")) {
-            case ("TEST"): {
-                try {
-                    typeDemo("dm_acl");
+            case "ASSIGN_PERMISSION_SET": {
+                String aclName = appProperties.getProperty("permission.set.name");
+                System.out.println(aclName);
+                PermissionSet acl = new PermissionSet(aclName);
+                acl.assignPermissionSetToFiles(appProperties.getProperty("rObjectId.list.file.location"),session);
+                System.out.println(acl.getAclName());
 
-                } catch (DfException ex) {
-                    Logger.getLogger(HelloDFC.class.getName()).log(Level.INFO, null, ex);
-                }
+                break;
+
             }
-            case ("EXPORT_DOCUMENT"): {
-                contentExport(getRObjectIds(),appProperties.getProperty("export.file.location"));
+
+
+            case "EXPORT_DOCUMENT": {
+                contentExport(getRObjectIds(), appProperties.getProperty("export.file.location"));
                 extensionMapper = new ExtensionMapper(session);
+                break;
 
 
             }
@@ -46,8 +51,6 @@ public class HelloDFC {
                 System.out.println("ERROR");
             }
         }
-
-
 
 
         disconnect();
@@ -94,10 +97,10 @@ public class HelloDFC {
                 contentType = sysObject.getContentType();
                 objectName = sysObject.getObjectName();
                 inputStream = sysObject.getContent();
-                outputStream = new FileOutputStream(exportPath + objectName+"."+extensionMapper.getExtension(contentType));
+                outputStream = new FileOutputStream(exportPath + objectName + "." + extensionMapper.getExtension(contentType));
 
                 outputStream.write(new byte[1024], 0, 1024);
-                System.out.println("saving file"+objectName);
+                System.out.println("saving file" + objectName);
                 inputStream.close();
                 outputStream.close();
             } catch (DfException | IOException e) {
@@ -106,10 +109,7 @@ public class HelloDFC {
         }
 
 
-
-
     }
-
 
 
     private static void typeDemo(String typeName) throws DfException {
