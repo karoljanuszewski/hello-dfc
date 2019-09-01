@@ -6,21 +6,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;*/
 
 import com.documentum.fc.client.*;
-import com.documentum.fc.client.acs.IDfAcsClient;
 import com.documentum.fc.common.DfException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.sun.istack.Nullable;
 import jxl.Workbook;
-import jxl.write.Number;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
-import netscape.javascript.JSObject;
 
 
 import java.io.File;
@@ -61,13 +55,35 @@ public class DocumentProperty {
 
 
             List<String> attributeList = new ArrayList<>();
-            attributeList = getLablesFromAttributeNames(session,query,rObjectId);
+            attributeList = getLabelsFromAttributeNames(session,query,rObjectId);
+
+
+         //   valueList = getValuesFromAttributesForOneObject(session,query,rObjectId);
 
 
             for (int i = 0; i <attributeList.size() ; i++) {
                 Label label= new Label(i,0,attributeList.get(i));
                 excelSheet.addCell(label);
             }
+
+            rObjectId.get(0);
+
+
+            List<String> valueList = new ArrayList<>();
+
+            for (int j = 0; j <rObjectId.size() ; j++) {
+                for (int i = 0; i <attributeList.size() ; i++) {
+                    valueList = getValuesFromAttributesForOneObject(session,query,rObjectId.get(j));
+                    Label label = new Label(i,j+1,valueList.get(i));
+                    excelSheet.addCell(label);
+                }
+            }
+
+
+ /*           for (String rObject:rObjectId
+                 ) {
+                valueList = getValuesFromAttributesForOneObject(session,query,rObject);
+            }*/
 
 
 /*
@@ -106,13 +122,36 @@ public class DocumentProperty {
         }
     }
 
-    private List<String> getLablesFromAttributeNames(IDfSession session, IDfQuery query, ArrayList<String> rObjectId) {
+    private List<String> getValuesFromAttributesForOneObject(IDfSession session, IDfQuery query, String oneRObjectId) {
+        IDfCollection collection;
+        List<String> attributeValueList = new ArrayList<>();
+
+            try {
+                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + oneRObjectId + "';";
+                query.setDQL(dql);
+                collection = query.execute(session, IDfQuery.DF_READ_QUERY);
+                while (collection.next()) {
+                    for (int i = 0; i < collection.getAttrCount(); i++) {
+                        attributeValueList.add(String.valueOf(collection.getValueAt(i)));
+                    }
+                }
+            } catch (DfException e) {
+                e.printStackTrace();
+            }
+
+        System.out.println(attributeValueList);
+        return attributeValueList;
+
+    }
+
+
+
+    private List<String> getLabelsFromAttributeNames(IDfSession session, IDfQuery query, ArrayList<String> rObjectId) {
         IDfCollection collection;
         List<String> attributeNameList = new ArrayList<>();
 
-        for (String s : rObjectId) {
             try {
-                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + s + "';";
+                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + rObjectId.get(0) + "';";
                 query.setDQL(dql);
                 collection = query.execute(session, IDfQuery.DF_READ_QUERY);
                 while (collection.next()) {
@@ -123,10 +162,9 @@ public class DocumentProperty {
             } catch (DfException e) {
                 e.printStackTrace();
             }
-        }
+
         System.out.println(attributeNameList);
         return attributeNameList;
-
 
     }
 
