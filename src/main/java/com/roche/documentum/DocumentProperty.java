@@ -10,6 +10,7 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.List;
 
 public class DocumentProperty {
 
+    private static final Logger logger = Logger.getLogger(DocumentProperty.class);
     private String exportFileLocation;
     private String exportPropertiesFileName;
     private ArrayList<String> rObjectId;
@@ -25,16 +27,15 @@ public class DocumentProperty {
 
     public DocumentProperty(String exportFileLocation, String exportPropertiesFileName, ArrayList<String> rObjectId, IDfSession session) {
 
-        this.exportFileLocation=exportFileLocation;
-        this.exportPropertiesFileName=exportPropertiesFileName;
-        this.rObjectId=rObjectId;
-        this.session=session;
+        this.exportFileLocation = exportFileLocation;
+        this.exportPropertiesFileName = exportPropertiesFileName;
+        this.rObjectId = rObjectId;
+        this.session = session;
 
     }
 
     public void createWorkbook() {
         WritableWorkbook workbook = null;
-        IDfQuery query = new DfQuery();
 
         try {
             workbook = Workbook.createWorkbook(new File(exportFileLocation + exportPropertiesFileName));
@@ -48,6 +49,8 @@ public class DocumentProperty {
             for (int i = 0; i < attributeList.size(); i++) {
                 Label label = new Label(i, 0, attributeList.get(i));
                 excelSheet.addCell(label);
+
+                logger.info("Adding label: " + attributeList.get(i));
             }
 
             rObjectId.get(0);
@@ -79,7 +82,7 @@ public class DocumentProperty {
         }
     }
 
-    private List<String> getValuesFromAttributesForOneObject(String oneRObjectId) {
+    private List<String> getValuesFromAttributesForOneObject(String oneRObjectId) { //TODO result as expected, but fix unnecessary loops
         IDfCollection collection;
         IDfQuery query = new DfQuery();
         List<String> attributeValueList = new ArrayList<>();
@@ -91,13 +94,14 @@ public class DocumentProperty {
             while (collection.next()) {
                 for (int i = 0; i < collection.getAttrCount(); i++) {
                     attributeValueList.add(String.valueOf(collection.getValueAt(i)));
+
+                    logger.info("Reading value: " + String.valueOf(collection.getValueAt(i)) + " and adding to " + oneRObjectId + " row");
                 }
             }
         } catch (DfException e) {
             e.printStackTrace();
         }
 
-        System.out.println(attributeValueList);
         return attributeValueList;
 
     }
@@ -115,13 +119,14 @@ public class DocumentProperty {
             while (collection.next()) {
                 for (int i = 0; i < collection.getAttrCount(); i++) {
                     attributeNameList.add(collection.getAttr(i).getName());
+
+                    logger.info("Reading value: " + (collection.getAttr(i).getName() + " and adding to the list"));
                 }
             }
         } catch (DfException e) {
             e.printStackTrace();
         }
 
-        System.out.println(attributeNameList);
         return attributeNameList;
 
     }
