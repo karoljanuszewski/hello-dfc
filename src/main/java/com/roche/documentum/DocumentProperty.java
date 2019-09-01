@@ -10,6 +10,7 @@ import com.documentum.fc.client.acs.IDfAcsClient;
 import com.documentum.fc.common.DfException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.sun.istack.Nullable;
 import jxl.Workbook;
@@ -32,7 +33,7 @@ public class DocumentProperty {
     public DocumentProperty(String exportFileLocation, String exportPropertiesFileName, ArrayList<String> rObjectId, IDfSession session) {
 
 
-        List<JsonObject> jsonList = new ArrayList<>();
+        List<JsonObject> jsonList;
         IDfQuery query = new DfQuery();
 
         //  JsonObject jsonObject = buildJsonFromDqlQuery(session,query);
@@ -40,22 +41,36 @@ public class DocumentProperty {
         jsonList = buildJsonArrayFromDqlQuery(session, query, rObjectId);
 
 
-        createWorkbook(exportFileLocation, exportPropertiesFileName);
+        createWorkbook(exportFileLocation, exportPropertiesFileName, jsonList,session,rObjectId, query);
 
 
     }
 
-    private void createWorkbook(String exportFileLocation, String exportPropertiesFileName) {
+    private void createWorkbook(String exportFileLocation, String exportPropertiesFileName, List<JsonObject> jsonList, IDfSession session, ArrayList<String> rObjectId, IDfQuery query) {
         // WritableWorkbook workbook = null;
 
         WritableWorkbook workbook = null;
+
 
         try {
             workbook = Workbook.createWorkbook(new File(exportFileLocation + exportPropertiesFileName));
 
             WritableSheet excelSheet = workbook.createSheet("Sheet1", 0);
-
+//   createLabelsInSheet(jsonList.get(0));
             // add something into the Excel sheet
+
+
+            List<String> attributeList = new ArrayList<>();
+            attributeList = getLablesFromAttributeNames(session,query,rObjectId);
+
+
+            for (int i = 0; i <attributeList.size() ; i++) {
+                Label label= new Label(i,0,attributeList.get(i));
+                excelSheet.addCell(label);
+            }
+
+
+/*
             Label label = new Label(0, 0, "Test Count");
             excelSheet.addCell(label);
 
@@ -73,6 +88,7 @@ public class DocumentProperty {
 
             label = new Label(1, 2, "Passed 2");
             excelSheet.addCell(label);
+*/
 
             workbook.write();
 
@@ -90,9 +106,34 @@ public class DocumentProperty {
         }
     }
 
+    private List<String> getLablesFromAttributeNames(IDfSession session, IDfQuery query, ArrayList<String> rObjectId) {
+        IDfCollection collection;
+        List<String> attributeNameList = new ArrayList<>();
+
+        for (String s : rObjectId) {
+            try {
+                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + s + "';";
+                query.setDQL(dql);
+                collection = query.execute(session, IDfQuery.DF_READ_QUERY);
+                while (collection.next()) {
+                    for (int i = 0; i < collection.getAttrCount(); i++) {
+                        attributeNameList.add(collection.getAttr(i).getName());
+                    }
+                }
+            } catch (DfException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(attributeNameList);
+        return attributeNameList;
+
+
+    }
+
     private String createStringFromJson(JsonObject jsonObject) {
         return ("[" + jsonObject + "]");
     }
+
 
     private List<JsonObject> buildJsonArrayFromDqlQuery(IDfSession session, IDfQuery query, ArrayList<String> rObjectId) {
         IDfCollection collection;
@@ -113,14 +154,15 @@ public class DocumentProperty {
 
                     }
 
-                    jsonArray.add(jsonObject);
-                    System.out.println(jsonObject);
+                    //  jsonArray.add(jsonObject);
+                    System.out.println("JsonObject: " + jsonObject);
 
                 }
 
             } catch (DfException e) {
                 e.printStackTrace();
             }
+            jsonArray.add(jsonObject);
 
         }
 
