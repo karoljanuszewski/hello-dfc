@@ -6,6 +6,9 @@ import com.documentum.fc.client.acs.IDfAcsClient;
 import com.documentum.fc.common.DfException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.sun.istack.Nullable;
+import netscape.javascript.JSObject;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -27,10 +30,38 @@ public class DocumentProperty {
         String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + rObjectId.get(0) + "';";
         System.out.println(dql);
         query.setDQL(dql);
-        createJsonFromDqlQuery(session, query);
+       // createJsonFromDqlQuery(session, query);
+        buildJsonFromDqlQuery(session,query);
 
 
     }
+
+    private void buildJsonFromDqlQuery(IDfSession session, IDfQuery query) {
+        IDfCollection collection;
+
+        JsonObject jsonObject = new JsonObject();
+
+        try {
+            collection = query.execute(session, IDfQuery.DF_READ_QUERY);
+            while (collection.next()) {
+                for (int i = 0; i < collection.getAttrCount(); i++) {
+                    String attributeName = collection.getAttr(i).getName();
+                    String attributeValue = String.valueOf(collection.getValueAt(i));
+                    jsonObject.addProperty(attributeName,attributeValue);
+
+                }
+                System.out.println(jsonObject);
+
+
+
+            }
+
+        } catch (DfException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     private void createJsonFromDqlQuery(IDfSession session, IDfQuery query) {
         IDfCollection collection;
