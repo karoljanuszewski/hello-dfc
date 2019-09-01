@@ -30,15 +30,15 @@ public class DocumentProperty {
 
 
     public DocumentProperty(String exportFileLocation, String exportPropertiesFileName, ArrayList<String> rObjectId, IDfSession session) {
-        IDfQuery query = new DfQuery();
-        String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + rObjectId.get(0) + "';";
-        System.out.println(dql);
-        query.setDQL(dql);
-       // createJsonFromDqlQuery(session, query);
-        JsonObject jsonObject = buildJsonFromDqlQuery(session,query);
 
-        String stringFromJson = createStringFromJson(jsonObject);
-        System.out.println(stringFromJson);
+
+        List<JsonObject> jsonList = new ArrayList<>();
+        IDfQuery query = new DfQuery();
+
+        //  JsonObject jsonObject = buildJsonFromDqlQuery(session,query);
+
+        jsonList = buildJsonArrayFromDqlQuery(session, query, rObjectId);
+
 
         createWorkbook(exportFileLocation, exportPropertiesFileName);
 
@@ -46,14 +46,14 @@ public class DocumentProperty {
     }
 
     private void createWorkbook(String exportFileLocation, String exportPropertiesFileName) {
-       // WritableWorkbook workbook = null;
+        // WritableWorkbook workbook = null;
 
-        WritableWorkbook myFirstWbook = null;
+        WritableWorkbook workbook = null;
 
         try {
-            myFirstWbook = Workbook.createWorkbook(new File(exportFileLocation+exportPropertiesFileName));
+            workbook = Workbook.createWorkbook(new File(exportFileLocation + exportPropertiesFileName));
 
-            WritableSheet excelSheet = myFirstWbook.createSheet("Sheet1", 0);
+            WritableSheet excelSheet = workbook.createSheet("Sheet1", 0);
 
             // add something into the Excel sheet
             Label label = new Label(0, 0, "Test Count");
@@ -74,21 +74,15 @@ public class DocumentProperty {
             label = new Label(1, 2, "Passed 2");
             excelSheet.addCell(label);
 
-            myFirstWbook.write();
+            workbook.write();
 
 
-/*
-            workbook= Workbook.createWorkbook(new File(exportFileLocation+exportPropertiesFileName));
-            WritableSheet sheet = workbook.createSheet("Sheet 1",0);
-
-            Number number = new Number(0,0,1);
-            sheet.addCell(number);*/
         } catch (IOException | WriteException e) {
             e.printStackTrace();
         } finally {
             try {
-                if (myFirstWbook != null){
-                    (myFirstWbook).close();
+                if (workbook != null) {
+                    (workbook).close();
                 }
             } catch (IOException | WriteException e) {
                 e.printStackTrace();
@@ -97,8 +91,42 @@ public class DocumentProperty {
     }
 
     private String createStringFromJson(JsonObject jsonObject) {
-        return ("["+jsonObject+"]");
+        return ("[" + jsonObject + "]");
     }
+
+    private List<JsonObject> buildJsonArrayFromDqlQuery(IDfSession session, IDfQuery query, ArrayList<String> rObjectId) {
+        IDfCollection collection;
+
+        List<JsonObject> jsonArray = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+
+        for (String s : rObjectId) {
+            try {
+                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + s + "';";
+                query.setDQL(dql);
+                collection = query.execute(session, IDfQuery.DF_READ_QUERY);
+                while (collection.next()) {
+                    for (int i = 0; i < collection.getAttrCount(); i++) {
+                        String attributeName = collection.getAttr(i).getName();
+                        String attributeValue = String.valueOf(collection.getValueAt(i));
+                        jsonObject.addProperty(attributeName, attributeValue);
+
+                    }
+
+                    jsonArray.add(jsonObject);
+                    System.out.println(jsonObject);
+
+                }
+
+            } catch (DfException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return jsonArray;
+    }
+
 
     private JsonObject buildJsonFromDqlQuery(IDfSession session, IDfQuery query) {
         IDfCollection collection;
@@ -111,7 +139,7 @@ public class DocumentProperty {
                 for (int i = 0; i < collection.getAttrCount(); i++) {
                     String attributeName = collection.getAttr(i).getName();
                     String attributeValue = String.valueOf(collection.getValueAt(i));
-                    jsonObject.addProperty(attributeName,attributeValue);
+                    jsonObject.addProperty(attributeName, attributeValue);
 
                 }
 
@@ -124,7 +152,6 @@ public class DocumentProperty {
         }
         return jsonObject;
     }
-
 
 
     private void createJsonFromDqlQuery(IDfSession session, IDfQuery query) {
@@ -151,24 +178,6 @@ public class DocumentProperty {
             e.printStackTrace();
         }
     }
-
-
-
-/*
-    private void createWorkbookWithSheet(String exportFileLocation, String exportPropertiesFileName) {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Properties");
-        try {
-            OutputStream fileOut = new FileOutputStream(exportFileLocation + exportPropertiesFileName);
-            workbook.write(fileOut);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }*/
 
 
 }
