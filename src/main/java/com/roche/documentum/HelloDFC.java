@@ -5,9 +5,7 @@ import com.documentum.com.IDfClientX;
 import com.documentum.fc.client.*;
 import com.documentum.fc.common.DfException;
 import com.documentum.fc.common.DfId;
-import com.documentum.fc.common.IDfAttr;
 import com.documentum.fc.common.IDfLoginInfo;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -31,8 +29,8 @@ public class HelloDFC {
             case "ASSIGN_PERMISSION_SET": {
                 String aclName = appProperties.getProperty("permission.set.name");
                 System.out.println(aclName);
-                PermissionSet acl = new PermissionSet(aclName);
-                acl.assignPermissionSetToFiles(getRObjectIds(), session);
+                PermissionSet acl = new PermissionSet(aclName,session);
+                acl.assignPermissionSetToFiles(getRObjectIds());
 
                 break;
 
@@ -51,11 +49,18 @@ public class HelloDFC {
                 String exportFileLocation = appProperties.getProperty("export.file.location");
                 String exportPropertiesFileName = appProperties.getProperty("export.properties.file.name");
 
-                DocumentProperty documentProperty = new DocumentProperty(exportFileLocation,exportPropertiesFileName, getRObjectIds(), session);
+                DocumentProperty documentProperty = new DocumentProperty(exportFileLocation, exportPropertiesFileName, getRObjectIds(), session);
+                documentProperty.createWorkbook();
 
                 break;
 
             }
+            case "CREATE_PERMISSION_SET":{
+
+
+                break;
+            }
+
             default: {
                 System.out.println("ERROR");
             }
@@ -185,86 +190,6 @@ public class HelloDFC {
     public static void disconnect() {
         sessionManager.release(session);
     }
-
-
-    private static String readProperty(String propertyKey) {
-        String propertyValue = "";
-        try (InputStream inputStream = HelloDFC.class.getClassLoader().getResourceAsStream("main/resources/config.properties")) {
-
-            Properties properties = new Properties();
-            properties.load(inputStream);
-
-
-            propertyValue = properties.getProperty(propertyKey);
-
-            System.out.println(propertyValue);
-
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return propertyValue;
-    }
-
-    private static void documentModificationDemo(String objectId) throws DfException {
-        IDfSysObject sysObj = (IDfSysObject) session.getObject(new DfId(objectId));
-        sysObj.setString("rog_comments", "test sample application");
-        sysObj.save();
-    }
-
-    public static void apiDemo() throws DfException {
-        IDfPersistentObject object = (IDfPersistentObject) session.newObject("dm_acl");
-        object.apiSet("set", "owner_name", "etmfdev");
-        object.apiSet("set", "object_name", "test_acl2");
-
-        object.apiExec("grant", "dm_owner,1");
-        object.apiExec("grant", "etmfdev,7,execute_proc,change_permit");
-
-        object.save();
-    }
-
-
-    public static void typeAttributesDemo(String typeName) throws DfException {
-        IDfType type = session.getType(typeName);
-        IDfAttr attr;
-        for (int i = 0; i < type.getTypeAttrCount(); i++) {
-            attr = type.getAttr(i);
-            System.out.println("Name: " + attr.getName() + " Length: " + attr.getLength());
-        }
-
-    }
-
-    public static void typeDumpDemo(String typeName) throws DfException {
-        IDfType type = session.getType(typeName);
-
-        System.out.println("Dump of " + typeName + ": ");
-        System.out.println(type.dump());
-    }
-
-    private static void selectDocumentsForStudyDemo(String studyNumber) throws DfException {
-        String dql = "select * from cd_clinical_tmf_doc where clinical_trial_id = '" + studyNumber + "'";
-        IDfQuery query = new DfQuery();
-        query.setDQL(dql);
-        IDfCollection coll = null;
-        coll = query.execute(session, IDfQuery.DF_READ_QUERY);
-
-        while (coll.next()) {
-            System.out.println(coll.getString("r_object_id") + " " + coll.getString("object_name") + " " + coll.getString("acl_name"));
-        }
-
-        if (coll != null) {
-            coll.close();
-        }
-
-    }
-
-
-    //typeDemo("dm_document");
-    //typeAttributesDemo("dm_acl");
-    //typeDumpDemo("dm_acl");
-    //selectDocumentsForStudyDemo("ML00780");
-    //documentModificationDemo("090f42df8025afbc");
-    //apiDemo();
 
 
 }

@@ -11,15 +11,17 @@ import java.util.ArrayList;
 public class PermissionSet {
 
     private String aclName;
+    private IDfSession session;
 
-    public PermissionSet(String aclName) {
+    public PermissionSet(String aclName, IDfSession session) {
 
+        this.session=session;
         this.aclName = aclName;
 
     }
 
 
-    public void assignPermissionSetToFiles(ArrayList<String> files, IDfSession session) throws DfException {
+    public void assignPermissionSetToFiles(ArrayList<String> files) throws DfException {
 
         IDfQuery query = new DfQuery();
         String dql;

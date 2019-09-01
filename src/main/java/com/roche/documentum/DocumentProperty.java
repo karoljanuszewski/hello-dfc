@@ -1,110 +1,67 @@
 package main.java.com.roche.documentum;
 
-/*
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;*/
-
-import com.documentum.fc.client.*;
+import com.documentum.fc.client.DfQuery;
+import com.documentum.fc.client.IDfCollection;
+import com.documentum.fc.client.IDfQuery;
+import com.documentum.fc.client.IDfSession;
 import com.documentum.fc.common.DfException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
-
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DocumentProperty {
 
+    private String exportFileLocation;
+    private String exportPropertiesFileName;
+    private ArrayList<String> rObjectId;
+    private IDfSession session;
 
     public DocumentProperty(String exportFileLocation, String exportPropertiesFileName, ArrayList<String> rObjectId, IDfSession session) {
 
-
-        List<JsonObject> jsonList;
-        IDfQuery query = new DfQuery();
-
-        //  JsonObject jsonObject = buildJsonFromDqlQuery(session,query);
-
-        jsonList = buildJsonArrayFromDqlQuery(session, query, rObjectId);
-
-
-        createWorkbook(exportFileLocation, exportPropertiesFileName, jsonList,session,rObjectId, query);
-
+        this.exportFileLocation=exportFileLocation;
+        this.exportPropertiesFileName=exportPropertiesFileName;
+        this.rObjectId=rObjectId;
+        this.session=session;
 
     }
 
-    private void createWorkbook(String exportFileLocation, String exportPropertiesFileName, List<JsonObject> jsonList, IDfSession session, ArrayList<String> rObjectId, IDfQuery query) {
-        // WritableWorkbook workbook = null;
-
+    public void createWorkbook() {
         WritableWorkbook workbook = null;
-
+        IDfQuery query = new DfQuery();
 
         try {
             workbook = Workbook.createWorkbook(new File(exportFileLocation + exportPropertiesFileName));
 
             WritableSheet excelSheet = workbook.createSheet("Sheet1", 0);
-//   createLabelsInSheet(jsonList.get(0));
-            // add something into the Excel sheet
+
+            List<String> attributeList;
+            attributeList = getLabelsFromAttributeNames();
 
 
-            List<String> attributeList = new ArrayList<>();
-            attributeList = getLabelsFromAttributeNames(session,query,rObjectId);
-
-
-         //   valueList = getValuesFromAttributesForOneObject(session,query,rObjectId);
-
-
-            for (int i = 0; i <attributeList.size() ; i++) {
-                Label label= new Label(i,0,attributeList.get(i));
+            for (int i = 0; i < attributeList.size(); i++) {
+                Label label = new Label(i, 0, attributeList.get(i));
                 excelSheet.addCell(label);
             }
 
             rObjectId.get(0);
 
 
-            List<String> valueList = new ArrayList<>();
+            List<String> valueList;
 
-            for (int j = 0; j <rObjectId.size() ; j++) {
-                for (int i = 0; i <attributeList.size() ; i++) {
-                    valueList = getValuesFromAttributesForOneObject(session,query,rObjectId.get(j));
-                    Label label = new Label(i,j+1,valueList.get(i));
+            for (int j = 0; j < rObjectId.size(); j++) {
+                for (int i = 0; i < attributeList.size(); i++) {
+                    valueList = getValuesFromAttributesForOneObject(rObjectId.get(j));
+                    Label label = new Label(i, j + 1, valueList.get(i));
                     excelSheet.addCell(label);
                 }
             }
-
-
- /*           for (String rObject:rObjectId
-                 ) {
-                valueList = getValuesFromAttributesForOneObject(session,query,rObject);
-            }*/
-
-
-/*
-            Label label = new Label(0, 0, "Test Count");
-            excelSheet.addCell(label);
-
-            Number number = new Number(0, 1, 1);
-            excelSheet.addCell(number);
-
-            label = new Label(1, 0, "Result");
-            excelSheet.addCell(label);
-
-            label = new Label(1, 1, "Passed");
-            excelSheet.addCell(label);
-
-            number = new Number(0, 2, 2);
-            excelSheet.addCell(number);
-
-            label = new Label(1, 2, "Passed 2");
-            excelSheet.addCell(label);
-*/
 
             workbook.write();
 
@@ -122,22 +79,23 @@ public class DocumentProperty {
         }
     }
 
-    private List<String> getValuesFromAttributesForOneObject(IDfSession session, IDfQuery query, String oneRObjectId) {
+    private List<String> getValuesFromAttributesForOneObject(String oneRObjectId) {
         IDfCollection collection;
+        IDfQuery query = new DfQuery();
         List<String> attributeValueList = new ArrayList<>();
 
-            try {
-                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + oneRObjectId + "';";
-                query.setDQL(dql);
-                collection = query.execute(session, IDfQuery.DF_READ_QUERY);
-                while (collection.next()) {
-                    for (int i = 0; i < collection.getAttrCount(); i++) {
-                        attributeValueList.add(String.valueOf(collection.getValueAt(i)));
-                    }
+        try {
+            String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + oneRObjectId + "';";
+            query.setDQL(dql);
+            collection = query.execute(session, IDfQuery.DF_READ_QUERY);
+            while (collection.next()) {
+                for (int i = 0; i < collection.getAttrCount(); i++) {
+                    attributeValueList.add(String.valueOf(collection.getValueAt(i)));
                 }
-            } catch (DfException e) {
-                e.printStackTrace();
             }
+        } catch (DfException e) {
+            e.printStackTrace();
+        }
 
         System.out.println(attributeValueList);
         return attributeValueList;
@@ -145,118 +103,27 @@ public class DocumentProperty {
     }
 
 
-
-    private List<String> getLabelsFromAttributeNames(IDfSession session, IDfQuery query, ArrayList<String> rObjectId) {
+    private List<String> getLabelsFromAttributeNames() {
         IDfCollection collection;
+        IDfQuery query = new DfQuery();
         List<String> attributeNameList = new ArrayList<>();
 
-            try {
-                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + rObjectId.get(0) + "';";
-                query.setDQL(dql);
-                collection = query.execute(session, IDfQuery.DF_READ_QUERY);
-                while (collection.next()) {
-                    for (int i = 0; i < collection.getAttrCount(); i++) {
-                        attributeNameList.add(collection.getAttr(i).getName());
-                    }
+        try {
+            String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + rObjectId.get(0) + "';";
+            query.setDQL(dql);
+            collection = query.execute(session, IDfQuery.DF_READ_QUERY);
+            while (collection.next()) {
+                for (int i = 0; i < collection.getAttrCount(); i++) {
+                    attributeNameList.add(collection.getAttr(i).getName());
                 }
-            } catch (DfException e) {
-                e.printStackTrace();
             }
+        } catch (DfException e) {
+            e.printStackTrace();
+        }
 
         System.out.println(attributeNameList);
         return attributeNameList;
 
-    }
-
-    private String createStringFromJson(JsonObject jsonObject) {
-        return ("[" + jsonObject + "]");
-    }
-
-
-    private List<JsonObject> buildJsonArrayFromDqlQuery(IDfSession session, IDfQuery query, ArrayList<String> rObjectId) {
-        IDfCollection collection;
-
-        List<JsonObject> jsonArray = new ArrayList<>();
-        JsonObject jsonObject = new JsonObject();
-
-        for (String s : rObjectId) {
-            try {
-                String dql = "SELECT * FROM dm_document WHERE r_object_id = '" + s + "';";
-                query.setDQL(dql);
-                collection = query.execute(session, IDfQuery.DF_READ_QUERY);
-                while (collection.next()) {
-                    for (int i = 0; i < collection.getAttrCount(); i++) {
-                        String attributeName = collection.getAttr(i).getName();
-                        String attributeValue = String.valueOf(collection.getValueAt(i));
-                        jsonObject.addProperty(attributeName, attributeValue);
-
-                    }
-
-                    //  jsonArray.add(jsonObject);
-                    System.out.println("JsonObject: " + jsonObject);
-
-                }
-
-            } catch (DfException e) {
-                e.printStackTrace();
-            }
-            jsonArray.add(jsonObject);
-
-        }
-
-        return jsonArray;
-    }
-
-
-    private JsonObject buildJsonFromDqlQuery(IDfSession session, IDfQuery query) {
-        IDfCollection collection;
-
-        JsonObject jsonObject = new JsonObject();
-
-        try {
-            collection = query.execute(session, IDfQuery.DF_READ_QUERY);
-            while (collection.next()) {
-                for (int i = 0; i < collection.getAttrCount(); i++) {
-                    String attributeName = collection.getAttr(i).getName();
-                    String attributeValue = String.valueOf(collection.getValueAt(i));
-                    jsonObject.addProperty(attributeName, attributeValue);
-
-                }
-
-                System.out.println(jsonObject);
-
-            }
-
-        } catch (DfException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-
-    private void createJsonFromDqlQuery(IDfSession session, IDfQuery query) {
-        IDfCollection collection;
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Map<String, String> map = new HashMap<>();
-        String json;
-
-        try {
-            collection = query.execute(session, IDfQuery.DF_READ_QUERY);
-            while (collection.next()) {
-                for (int i = 0; i < collection.getAttrCount(); i++) {
-                    String attributeName = collection.getAttr(i).getName();
-                    String attributeValue = String.valueOf(collection.getValueAt(i));
-                    map.put(attributeName, attributeValue);
-                }
-
-                json = gson.toJson(map);
-                System.out.println(json);
-
-            }
-
-        } catch (DfException e) {
-            e.printStackTrace();
-        }
     }
 
 
