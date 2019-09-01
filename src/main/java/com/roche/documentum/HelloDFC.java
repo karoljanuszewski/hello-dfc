@@ -56,7 +56,9 @@ public class HelloDFC {
 
             }
             case "CREATE_PERMISSION_SET":{
-
+                PermissionSet acl = new PermissionSet();
+                String fileLocation= appProperties.getProperty("permission.set.csv.location");
+                acl.createPermissionSetFromCSV(fileLocation);
 
                 break;
             }
@@ -69,6 +71,7 @@ public class HelloDFC {
 
         disconnect();
     }
+
 
     private static ArrayList<String> getRObjectIds() throws FileNotFoundException {
         rObjectIds = new ArrayList<>();

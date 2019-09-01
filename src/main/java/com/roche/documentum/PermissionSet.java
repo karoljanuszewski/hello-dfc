@@ -1,12 +1,11 @@
 package main.java.com.roche.documentum;
 
-import com.documentum.fc.client.DfQuery;
-import com.documentum.fc.client.IDfCollection;
-import com.documentum.fc.client.IDfQuery;
-import com.documentum.fc.client.IDfSession;
+import com.documentum.fc.client.*;
 import com.documentum.fc.common.DfException;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class PermissionSet {
 
@@ -18,6 +17,9 @@ public class PermissionSet {
         this.session=session;
         this.aclName = aclName;
 
+    }
+
+    public PermissionSet() {
     }
 
 
@@ -51,6 +53,27 @@ public class PermissionSet {
         System.out.println("ownerName " + ownerName);
 
         return ownerName;
+    }
+
+
+
+    public void createPermissionSetFromCSV(String fileLocation) {
+//        System.out.println(fileLocation);
+        File file = new File("C:/sources//hello-dfc//workspace/permission_set_source/source.csv");  //FIXME why no property?
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(fis))) {
+                String line;
+                line = br.readLine();
+                System.out.println("line: "+line);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 }
