@@ -1,5 +1,9 @@
 package main.java.com.roche.documentum;
 
+/*
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;*/
 
 import com.documentum.fc.client.*;
 import com.documentum.fc.client.acs.IDfAcsClient;
@@ -8,19 +12,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.sun.istack.Nullable;
+import jxl.Workbook;
+import jxl.write.Number;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 import netscape.javascript.JSObject;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DocumentProperty {
 
@@ -31,12 +35,72 @@ public class DocumentProperty {
         System.out.println(dql);
         query.setDQL(dql);
        // createJsonFromDqlQuery(session, query);
-        buildJsonFromDqlQuery(session,query);
+        JsonObject jsonObject = buildJsonFromDqlQuery(session,query);
+
+        String stringFromJson = createStringFromJson(jsonObject);
+        System.out.println(stringFromJson);
+
+        createWorkbook(exportFileLocation, exportPropertiesFileName);
 
 
     }
 
-    private void buildJsonFromDqlQuery(IDfSession session, IDfQuery query) {
+    private void createWorkbook(String exportFileLocation, String exportPropertiesFileName) {
+       // WritableWorkbook workbook = null;
+
+        WritableWorkbook myFirstWbook = null;
+
+        try {
+            myFirstWbook = Workbook.createWorkbook(new File(exportFileLocation+exportPropertiesFileName));
+
+            WritableSheet excelSheet = myFirstWbook.createSheet("Sheet1", 0);
+
+            // add something into the Excel sheet
+            Label label = new Label(0, 0, "Test Count");
+            excelSheet.addCell(label);
+
+            Number number = new Number(0, 1, 1);
+            excelSheet.addCell(number);
+
+            label = new Label(1, 0, "Result");
+            excelSheet.addCell(label);
+
+            label = new Label(1, 1, "Passed");
+            excelSheet.addCell(label);
+
+            number = new Number(0, 2, 2);
+            excelSheet.addCell(number);
+
+            label = new Label(1, 2, "Passed 2");
+            excelSheet.addCell(label);
+
+            myFirstWbook.write();
+
+
+/*
+            workbook= Workbook.createWorkbook(new File(exportFileLocation+exportPropertiesFileName));
+            WritableSheet sheet = workbook.createSheet("Sheet 1",0);
+
+            Number number = new Number(0,0,1);
+            sheet.addCell(number);*/
+        } catch (IOException | WriteException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (myFirstWbook != null){
+                    (myFirstWbook).close();
+                }
+            } catch (IOException | WriteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String createStringFromJson(JsonObject jsonObject) {
+        return ("["+jsonObject+"]");
+    }
+
+    private JsonObject buildJsonFromDqlQuery(IDfSession session, IDfQuery query) {
         IDfCollection collection;
 
         JsonObject jsonObject = new JsonObject();
@@ -50,15 +114,15 @@ public class DocumentProperty {
                     jsonObject.addProperty(attributeName,attributeValue);
 
                 }
+
                 System.out.println(jsonObject);
-
-
 
             }
 
         } catch (DfException e) {
             e.printStackTrace();
         }
+        return jsonObject;
     }
 
 
@@ -88,6 +152,9 @@ public class DocumentProperty {
         }
     }
 
+
+
+/*
     private void createWorkbookWithSheet(String exportFileLocation, String exportPropertiesFileName) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Properties");
@@ -101,7 +168,7 @@ public class DocumentProperty {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
 
 }
