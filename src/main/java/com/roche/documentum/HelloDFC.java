@@ -32,18 +32,28 @@ public class HelloDFC {
                 String aclName = appProperties.getProperty("permission.set.name");
                 System.out.println(aclName);
                 PermissionSet acl = new PermissionSet(aclName);
-                acl.assignPermissionSetToFiles(getRObjectIds(),session);
+                acl.assignPermissionSetToFiles(getRObjectIds(), session);
 
                 break;
 
             }
 
-
             case "EXPORT_DOCUMENT": {
                 contentExport(getRObjectIds(), appProperties.getProperty("export.file.location"));
                 extensionMapper = new ExtensionMapper(session);
+
                 break;
 
+
+            }
+
+            case "EXPORT_PROPERTIES": {
+                String exportFileLocation = appProperties.getProperty("export.file.location");
+                String exportPropertiesFileName = appProperties.getProperty("export.properties.file.name");
+
+                DocumentProperty documentProperty = new DocumentProperty(exportFileLocation,exportPropertiesFileName, getRObjectIds(), session);
+
+                break;
 
             }
             default: {
