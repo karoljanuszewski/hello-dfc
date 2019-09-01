@@ -64,15 +64,18 @@ public class PermissionSet {
     }
 
 
-    public void readLines() {
+    public void readLines() { //TODO finish
 
         String fileName = "C:/sources//hello-dfc//workspace/permission_set_source/source.csv";
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 
+            logger.info("Reading from file: "+fileName+" following lines:");
+
             String line;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
+
+                logger.info("line: "+line);
             }
 
         } catch (IOException e) {
