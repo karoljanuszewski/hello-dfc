@@ -2,7 +2,10 @@ package main.java.com.roche.documentum;
 
 import com.documentum.com.DfClientX;
 import com.documentum.com.IDfClientX;
-import com.documentum.fc.client.*;
+import com.documentum.fc.client.IDfClient;
+import com.documentum.fc.client.IDfSession;
+import com.documentum.fc.client.IDfSessionManager;
+import com.documentum.fc.client.IDfSysObject;
 import com.documentum.fc.common.DfException;
 import com.documentum.fc.common.DfId;
 import com.documentum.fc.common.IDfLoginInfo;
@@ -28,8 +31,7 @@ public class HelloDFC {
         switch (appProperties.getProperty("application.mode")) {
             case "ASSIGN_PERMISSION_SET": {
                 String aclName = appProperties.getProperty("permission.set.name");
-                System.out.println(aclName);
-                PermissionSet acl = new PermissionSet(aclName,session);
+                PermissionSet acl = new PermissionSet(aclName, session);
                 acl.assignPermissionSetToFiles(getRObjectIds());
 
                 break;
@@ -55,16 +57,15 @@ public class HelloDFC {
                 break;
 
             }
-            case "CREATE_PERMISSION_SET":{
+            case "CREATE_PERMISSION_SET": {
                 PermissionSet acl = new PermissionSet();
-                String fileLocation= appProperties.getProperty("permission.set.csv.location");
-                acl.createPermissionSetFromCSV(fileLocation);
+                acl.readLines();
 
                 break;
             }
 
             default: {
-                System.out.println("ERROR");
+                logger.error("application.mode: " + appProperties.getProperty("application.mode") + " not found in app.properties file");
             }
         }
 
@@ -76,7 +77,6 @@ public class HelloDFC {
     private static ArrayList<String> getRObjectIds() throws FileNotFoundException {
         rObjectIds = new ArrayList<>();
         String fileName = appProperties.getProperty("rObjectId.list.file.location");
-        System.out.println(fileName);
 
         InputStream inputStream = new FileInputStream(fileName);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -85,7 +85,7 @@ public class HelloDFC {
             String line = bufferedReader.readLine();
             while (line != null) {
                 rObjectIds.add(line);
-                System.out.println(line);
+                logger.info("Reading r_object_id value: " + line);
                 line = bufferedReader.readLine();
             }
         } catch (IOException e) {
@@ -93,16 +93,18 @@ public class HelloDFC {
         }
         try {
             bufferedReader.close();
+            logger.info("Buffered Reader close()");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        logger.info("Returning a list of r_object_id 's: " + rObjectIds);
         return rObjectIds;
     }
 
     private static void contentExport(ArrayList<String> rObjectIds, String exportPath) {
         IDfSysObject sysObject;
         ByteArrayInputStream inputStream;
-        String objectName;
+        String objectName = null;
         String contentType;
         OutputStream outputStream;
         extensionMapper = new ExtensionMapper(session);
@@ -113,28 +115,21 @@ public class HelloDFC {
                 sysObject = (IDfSysObject) session.getObject(new DfId(rObject));
                 contentType = sysObject.getContentType();
                 objectName = sysObject.getObjectName();
+
                 inputStream = sysObject.getContent();
                 outputStream = new FileOutputStream(exportPath + objectName + "." + extensionMapper.getExtension(contentType));
 
                 outputStream.write(new byte[1024], 0, 1024);
-                System.out.println("saving file" + objectName);
                 inputStream.close();
                 outputStream.close();
+
+                String fullFileName = exportPath + objectName + "." + extensionMapper.getExtension(contentType);
+                logger.info("Successfully saved file: " + fullFileName);
             } catch (DfException | IOException e) {
                 e.printStackTrace();
+                logger.error("Saving a file : " + objectName + "unsuccessful");
             }
         }
-
-
-    }
-
-
-    private static void typeDemo(String typeName) throws DfException {
-        IDfType type = session.getType(typeName);
-        System.out.println("Info about " + typeName + " type:");
-        System.out.println("Name: " + type.getName());
-        System.out.println("Description: " + type.getDescription());
-        System.out.println("Super Name: " + type.getSuperName());
     }
 
 
@@ -163,7 +158,9 @@ public class HelloDFC {
 
             session = sessionManager.getSession(repository);
 
+            logger.info("Successfully logged to: " + repository + " as: " + username);
         } catch (Exception ex) {
+            logger.error("Unsuccessful logging");
             ex.printStackTrace();
         }
     }
@@ -174,23 +171,25 @@ public class HelloDFC {
 
         try (InputStream inputStream = HelloDFC.class.getClassLoader().getResourceAsStream("main/resources/config.properties")) {
             loginProperties.load(inputStream);
+            logger.info("Successfully reading config.properties file");
         }
 
         return loginProperties;
     }
 
 
-    private static Properties readAppProperties() throws IOException {
+    private static void readAppProperties() throws IOException {
         appProperties = new Properties();
 
         try (InputStream inputStream = HelloDFC.class.getClassLoader().getResourceAsStream("main/resources/app.properties")) {
             appProperties.load(inputStream);
+            logger.info("Successfully reading app.config file");
         }
-        return appProperties;
     }
 
 
     public static void disconnect() {
+        logger.info("Releasing session");
         sessionManager.release(session);
     }
 
