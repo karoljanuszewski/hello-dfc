@@ -31,7 +31,7 @@ public class HelloDFC {
         switch (appProperties.getProperty("application.mode")) {
             case "ASSIGN_PERMISSION_SET": {
                 String aclName = appProperties.getProperty("permission.set.name");
-                PermissionSet acl = new PermissionSet(aclName, session);
+                PermissionSet acl = new PermissionSet(aclName, session, appProperties);
                 acl.assignPermissionSetToFiles(getRObjectIds());
 
                 break;
@@ -58,7 +58,7 @@ public class HelloDFC {
 
             }
             case "CREATE_PERMISSION_SET": {
-                PermissionSet acl = new PermissionSet();
+                PermissionSet acl = new PermissionSet(appProperties);
                 acl.readLines();
 
                 break;
@@ -133,7 +133,7 @@ public class HelloDFC {
     }
 
 
-    private static void connect() {
+    private static void connect() { //new class autoClosable
         IDfClientX clientx = new DfClientX();
         IDfClient client;
         sessionManager = null;
