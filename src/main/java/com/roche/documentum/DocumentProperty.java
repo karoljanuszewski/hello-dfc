@@ -20,15 +20,13 @@ import java.util.List;
 public class DocumentProperty {
 
     private static final Logger logger = Logger.getLogger(DocumentProperty.class);
-    private String exportFileLocation;
-    private String exportPropertiesFileName;
+    private String fileLocation;
     private ArrayList<String> rObjectId;
     private IDfSession session;
 
-    public DocumentProperty(String exportFileLocation, String exportPropertiesFileName, ArrayList<String> rObjectId, IDfSession session) {
+    public DocumentProperty(String fileLocation, ArrayList<String> rObjectId, IDfSession session) {
 
-        this.exportFileLocation = exportFileLocation;
-        this.exportPropertiesFileName = exportPropertiesFileName;
+        this.fileLocation=fileLocation;
         this.rObjectId = rObjectId;
         this.session = session;
 
@@ -38,7 +36,7 @@ public class DocumentProperty {
         WritableWorkbook workbook = null;
 
         try {
-            workbook = Workbook.createWorkbook(new File(exportFileLocation + exportPropertiesFileName));
+            workbook = Workbook.createWorkbook(new File(this.fileLocation));
 
             WritableSheet excelSheet = workbook.createSheet("Sheet1", 0);
 
@@ -53,14 +51,13 @@ public class DocumentProperty {
                 logger.info("Adding label: " + attributeList.get(i));
             }
 
-            rObjectId.get(0);
-
 
             List<String> valueList;
 
             for (int j = 0; j < rObjectId.size(); j++) {
+                valueList = getValuesFromAttributesForOneObject(rObjectId.get(j));
                 for (int i = 0; i < attributeList.size(); i++) {
-                    valueList = getValuesFromAttributesForOneObject(rObjectId.get(j));
+
                     Label label = new Label(i, j + 1, valueList.get(i));
                     excelSheet.addCell(label);
                 }
@@ -82,7 +79,7 @@ public class DocumentProperty {
         }
     }
 
-    private List<String> getValuesFromAttributesForOneObject(String oneRObjectId) { //TODO result as expected, but fix unnecessary loops
+    private List<String> getValuesFromAttributesForOneObject(String oneRObjectId) {
         IDfCollection collection;
         IDfQuery query = new DfQuery();
         List<String> attributeValueList = new ArrayList<>();

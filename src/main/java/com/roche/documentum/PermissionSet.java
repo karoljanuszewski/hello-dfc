@@ -11,20 +11,24 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class PermissionSet {
 
     private static final Logger logger = Logger.getLogger(PermissionSet.class);
     private String aclName;
     private IDfSession session;
+    private Properties properties;
 
-    public PermissionSet(String aclName, IDfSession session) {
+    public PermissionSet(String aclName, IDfSession session, Properties appProperties) {
 
-        this.session = session;
         this.aclName = aclName;
+        this.session = session;
+        this.properties = appProperties;
     }
 
-    public PermissionSet() {
+    public PermissionSet(Properties appProperties) {
+        this.properties = appProperties;
     }
 
 
@@ -66,16 +70,16 @@ public class PermissionSet {
 
     public void readLines() { //TODO finish
 
-        String fileName = "C:/sources//hello-dfc//workspace/permission_set_source/source.csv";
+        String csvFileLocation = properties.getProperty("permission.set.csv.location");
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFileLocation))) {
 
-            logger.info("Reading from file: "+fileName+" following lines:");
+            logger.info("Reading from file: " + csvFileLocation + " following lines:");
 
             String line;
             while ((line = br.readLine()) != null) {
 
-                logger.info("line: "+line);
+                logger.info("line: " + line);
             }
 
         } catch (IOException e) {

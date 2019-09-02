@@ -27,11 +27,12 @@ public class HelloDFC {
         connect();
         readAppProperties();
 
+        String applicationRunMode = (appProperties.getProperty("application.mode"));
 
-        switch (appProperties.getProperty("application.mode")) {
+        switch (applicationRunMode) {
             case "ASSIGN_PERMISSION_SET": {
                 String aclName = appProperties.getProperty("permission.set.name");
-                PermissionSet acl = new PermissionSet(aclName, session);
+                PermissionSet acl = new PermissionSet(aclName, session, appProperties);
                 acl.assignPermissionSetToFiles(getRObjectIds());
 
                 break;
@@ -44,21 +45,19 @@ public class HelloDFC {
 
                 break;
 
-
             }
 
             case "EXPORT_PROPERTIES": {
-                String exportFileLocation = appProperties.getProperty("export.file.location");
-                String exportPropertiesFileName = appProperties.getProperty("export.properties.file.name");
+                String fileLocation = appProperties.getProperty("export.file.location")+appProperties.getProperty("export.properties.file.name");
 
-                DocumentProperty documentProperty = new DocumentProperty(exportFileLocation, exportPropertiesFileName, getRObjectIds(), session);
+                DocumentProperty documentProperty = new DocumentProperty(fileLocation, getRObjectIds(), session);
                 documentProperty.createWorkbook();
 
                 break;
 
             }
             case "CREATE_PERMISSION_SET": {
-                PermissionSet acl = new PermissionSet();
+                PermissionSet acl = new PermissionSet(appProperties);
                 acl.readLines();
 
                 break;
@@ -133,7 +132,7 @@ public class HelloDFC {
     }
 
 
-    private static void connect() {
+    private static void connect() { //new class autoClosable
         IDfClientX clientx = new DfClientX();
         IDfClient client;
         sessionManager = null;
